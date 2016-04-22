@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form class="form-horizontal col-md-6 col-md-offset-3 text-center" method="post">{% csrf_token %}
+<div class="alert alert-danger" role="alert">
+    <p> Удалить запись? </p>
+    <p> {{ object.cash_expense}} </p>
+    <p> {{ object.cash_value }}  </p>
+    <p> {{ object.cash_desc }} </p>
+    <input type="submit" value="Submit" />
+</div>
+</form>
+{% endblock %}

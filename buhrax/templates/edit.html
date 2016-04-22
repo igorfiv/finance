@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+            {{ form.non_field_errors }}
+        <form class="form-horizontal col-md-6 col-md-offset-3" method="post">
+             <div class="form-group">
+                    {% csrf_token %}
+                <label for="cash_expence">Статья затрат</label>
+                    {{ form.cash_expence.errors }}
+                    {{ form.cash_expense }}
+                <label for="cash_date">Дата</label>
+                    {{ form.cash_date.errors }}
+                    {{ form.cash_date }}
+                <label for="cash_type">Вид движения</label>
+                    {{ form.cash_type.errors }}
+                    {{ form.cash_type }}
+                <label for="cash_type">Сумма</label>
+                    {{ form.cash_value.errors }}
+                    {{ form.cash_value }}
+                <label for="cash_type">Описание</label>
+                    {{ form.cash_desc.errors }}
+                    {{ form.cash_desc }}
+
+            </div>
+            <input type="submit" value="Submit" />
+        </form>
+{% endblock %}

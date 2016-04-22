@@ -11,6 +11,8 @@ urlpatterns = [
         views.cash_list, name='cash_list'),
     url(r'^planned/$',
         views.cash_planned_list, name='cash_planned_list'),
+    url(r'^planned/add/$',
+        views.planned_cash_create, name='planned_cash_create'),
     url(r'^update/(?P<pk>[0-9]+)$',
         views.cash_update, name='cash_update'),
     url(r'^add/$',

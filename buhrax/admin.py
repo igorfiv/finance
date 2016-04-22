@@ -13,10 +13,10 @@ class cashAdmin(admin.ModelAdmin):
     list_display = ('cash_expense', 'cash_date', 'cash_type', 'cash_value')
 
 
-class planned_cash_Admin(admin.ModelAdmin):
+class cash_planned_Admin(admin.ModelAdmin):
     list_display = ('planned_cash_expense', 'planned_cash_date', 'planned_cash_repeat', 'planned_cash_value')
 
 admin.site.register(types_of_expenses)
 admin.site.register(expense, expenseAdmin)
 admin.site.register(cash, cashAdmin)
-admin.site.register(cash_planned, planned_cash_Admin)
+admin.site.register(cash_planned, cash_planned_Admin)

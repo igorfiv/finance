@@ -172,11 +172,21 @@ def cash_delete(request, pk):
 
 @login_required
 def cash_planned_list(request):
-    planned_cash_data = planned_cash.objects.all()
-    planned_cash_total = planned_cash.objects.aggregate(Sum('planned_cash_value'))
+    planned_cash_data = cash_planned.objects.all()
+    planned_cash_total = cash_planned.objects.aggregate(Sum('planned_cash_value'))
 
     output = {'planned_cash_data': planned_cash_data,
               'planned_cash_total': planned_cash_total
               }
 
     return render(request, 'planned.html', output)
+
+
+@login_required
+def planned_cash_create(request):
+    form = CashPlannedFrom(request.POST or None)
+    if form.is_valid():
+        form.save()
+        return redirect('buhrax:cash_planned_list')
+
+    return render(request, 'edit_planned.html', {'form': form})

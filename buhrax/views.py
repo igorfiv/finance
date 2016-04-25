@@ -1,3 +1,5 @@
+# coding=utf-8
+from __future__ import print_function
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Sum
 from .models import cash, UserProfile, cash_planned
@@ -30,9 +32,17 @@ class CashForm(ModelForm):
 class CashPlannedFrom(ModelForm):
     class Meta:
         model = cash_planned
-        fields = ['planned_cash_date', 'planned_cash_value',
+        fields = ['planned_cash_expense', 'planned_cash_date', 'planned_cash_value',
                   'planned_cash_repeat','planned_cash_desc'
                   ]
+
+        widgets = {
+            'planned_cash_expense': Select(attrs={'class': 'form-control'}),
+            'planned_cash_date': DateInput(attrs={'class': 'form-control'}),
+            'planned_cash_repeat': Select(attrs={'class': 'form-control'}),
+            'planned_cash_value': TextInput(attrs={'class': 'form-control'}),
+            'planned_cash_desc': TextInput(attrs={'class': 'form-control'}),
+        }
 
 
 class UserForm(ModelForm):
@@ -73,7 +83,7 @@ def register(request):
 
             registered = True
         else:
-            print user_form.errors, profile_form.errors
+            print(user_form.errors, profile_form.errors)
 
     else:
         user_form = UserForm()
@@ -97,7 +107,7 @@ def user_login(request):
             else:
                 return HttpResponse("Your account is disabled")
         else:
-            print "Invalid credentials: {0}, {1}".format(username, password)
+            print("Invalid credentials: {0}, {1}".format(username, password))
             return HttpResponse("Invalid login details supplied.")
     else:
         return render(request, 'registration/login.html', {})
@@ -172,11 +182,41 @@ def cash_delete(request, pk):
 
 @login_required
 def cash_planned_list(request):
-    planned_cash_data = cash_planned.objects.all()
+    planned_cash_data = cash_planned.objects.order_by('planned_cash_repeat', 'planned_cash_date').all()
     planned_cash_total = cash_planned.objects.aggregate(Sum('planned_cash_value'))
+    planned_cash_total_by_week = cash_planned.objects.filter(planned_cash_repeat='W').aggregate(Sum('planned_cash_value'))
+    planned_cash_total_by_month = cash_planned.objects.filter(planned_cash_repeat='M').aggregate(Sum('planned_cash_value'))
+    planned_cash_total_by_year = cash_planned.objects.filter(planned_cash_repeat='Y').aggregate(Sum('planned_cash_value'))
+
+    try:
+        tmp = int(planned_cash_total_by_week['planned_cash_value__sum'])
+    except TypeError:
+        week_result = 0
+    else:
+        week_result = tmp
+
+    try:
+        tmp = int(planned_cash_total_by_month['planned_cash_value__sum'])
+    except TypeError:
+        if week_result > 0:
+            month_result = week_result * 4
+    else:
+        if week_result > 0:
+            month_result = week_result * 4 + tmp
+
+    try:
+        tmp = int(planned_cash_total_by_year['planned_cash_value__sum'])
+    except TypeError:
+        if month_result > 0:
+            year_result = month_result * 12
+    else:
+        year_result = month_result * 12 + tmp
 
     output = {'planned_cash_data': planned_cash_data,
-              'planned_cash_total': planned_cash_total
+              'planned_cash_total': planned_cash_total,
+              'week_result': week_result,
+              'month_result': month_result,
+              'year_result': year_result,
               }
 
     return render(request, 'planned.html', output)
@@ -190,3 +230,36 @@ def planned_cash_create(request):
         return redirect('buhrax:cash_planned_list')
 
     return render(request, 'edit_planned.html', {'form': form})
+
+
+@login_required
+def planned_cash_update(request, pk):
+    planned_cash_record = get_object_or_404(cash_planned, pk=pk)
+    form = CashPlannedFrom(request.POST or None, instance=planned_cash_record)
+    if form.is_valid():
+        form.save()
+        return redirect('buhrax:cash_planned_list')
+
+    return render(request, 'edit_planned.html', {'form': form})
+
+
+@login_required
+def planned_cash_delete(request, pk):
+    planned_cash_record = get_object_or_404(cash_planned, pk=pk)
+    if request.method == 'POST':
+        planned_cash_record.delete()
+        return redirect('buhrax:cash_planned_list')
+
+    return render(request, 'delete_planned.html', {'object': planned_cash_record})
+
+# TODO: перенос запланированной затраты в таблицу затрат
+# TODO: отметка о том что затрата перенесена в основную таблицу
+# TODO: снятие отметки когда запись удалятся
+
+@login_required
+def finance_report(request):
+    
+    return render(request, 'report.html', {})
+
+# TODO: соотношение затрат между собой
+# TODO: соотношение запланированных и не запланированнох затрат

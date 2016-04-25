@@ -42,7 +42,7 @@ class expense(models.Model):
         verbose_name_plural = 'Статьи расходов'
 
     def __unicode__(self):
-        return unicode(self.expenditure_name)
+        return self.expenditure_name
 
 
 class cash(models.Model):
@@ -63,11 +63,12 @@ class cash(models.Model):
         verbose_name_plural = 'Деньги'
 
     def __unicode__(self):
-        return unicode(self.cash_expense)
+        return self.cash_expense
 
 
 class cash_planned(models.Model):
     planned_cash_type_choices = (
+        ('N','Разово'),
         ('W', 'Неделя'),
         ('M', 'Месяц'),
         ('Y', 'Год')
@@ -85,4 +86,4 @@ class cash_planned(models.Model):
         verbose_name_plural = 'Запланированные затраты'
 
     def __unicode__(self):
-        return unicode(self.planned_cash_expense)
+        return self.planned_cash_expense

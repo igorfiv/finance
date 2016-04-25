@@ -5,9 +5,12 @@
 <head>
     <link href="{% static 'style.css' %}" rel="stylesheet" />
     <link href="{% static 'bootstrap/css/bootstrap.css' %}" rel="stylesheet">
+
+    {%  block scripts %}
     <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
     <script src="https://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
     <script src="{% static  'bootstrap/js/bootstrap.js' %}"></script>
+    {% endblock %}
 
     <title>
     {% block title %}
@@ -23,6 +26,7 @@
             <ul class="nav navbar-nav">
                 <li> <a href="{% url 'buhrax:cash_list' %}">Движение денег</a> </li>
                 <li> <a href="{% url 'buhrax:cash_planned_list' %}">Планирование затрат</a> </li>
+                <li> <a href="{% url 'buhrax:finance_report' %}">Финансовый отчет</a> </li>
             </ul>
             {% endif %}
             <ul class="nav navbar-nav navbar-right">
